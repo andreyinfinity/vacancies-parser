@@ -1,39 +1,51 @@
 """
 Модуль работы с API hh
 """
-# class HeadHunterAPI:
-#     def __init__(self):
 import requests
 import json
 import os.path
+from abs_classes import AbsAPI
 
-HH_AREAS = os.path.join(os.path.dirname(__file__), "data", "hh-areas.json")
-
-
-def get_areas() -> json:
-    """
-    Метод получения списка городов.
-    :return:
-    """
-    req = requests.get("https://api.hh.ru/areas")
-    data = req.json()
-    req.close()
-    return data
+HH_AREAS: str = os.path.join(os.path.dirname(__file__), "data", "hh-areas")
+HH_VAC: str = os.path.join(os.path.dirname(__file__), "data", "hh-vac", "hh-vac")
 
 
-def save_json_file(filename: str, json_data: json) -> None:
-    """
-    Метод сохранения в JSON файл.
-    :param filename:
-    :param json_data:
-    :return:
-    """
-    with open(filename, "w", encoding="utf-8") as file:
-        json.dump(json_data, file, indent=2, ensure_ascii=False)
+class HeadHunterAPI(AbsAPI):
+    def __init__(self, username):
+        self.username = username
+
+    def get_areas(self) -> json:
+        """
+        Метод получения общего списка населенных пунктов
+        :return:
+        """
+        response = requests.get("https://api.hh.ru/areas")
+        data = response.json()
+        return data
+
+    def get_vacancies(self, area=88):
+        params = {
+            'area': area,
+            'page': 0,
+            'per_page': 100
+        }
+        response = requests.get("https://api.hh.ru/vacancies", params)
+        data = response.json()
+        return data
 
 
 if __name__ == "__main__":
-    os.makedirs('data', exist_ok=True)
-    # if not os.path.isfile(HH_AREAS):
-    #     save_json_file(HH_AREAS, get_areas())
+    from files_module import JsonFile
 
+    # Загрузка списка населенных пунктов
+    json_file_areas = JsonFile(HH_AREAS)        # Экземпляр класса для работы с файлами
+    hh = HeadHunterAPI('Andrey')                # Экземпляр класса для работы с hh
+
+    if not os.path.isfile(HH_AREAS):            # Если файл с городами отсутствует
+        areas = hh.get_areas()
+        json_file_areas.save_to_file(areas)
+
+    # Загрузка списка вакансий
+    json_file_vac = JsonFile(HH_VAC)            # Экземпляр класса для формирования пути
+    vacancies = hh.get_vacancies()
+    json_file_vac.save_to_file(vacancies)       # Сохранение в файл
