@@ -4,10 +4,7 @@
 import requests
 import json
 import os.path
-from abs_classes import AbsAPI
-
-HH_AREAS: str = os.path.join(os.path.dirname(__file__), "data", "hh-areas")
-HH_VAC: str = os.path.join(os.path.dirname(__file__), "data", "hh-vac", "hh-vac")
+from abc_classes import AbsAPI
 
 
 class HeadHunterAPI(AbsAPI):
@@ -36,6 +33,7 @@ class HeadHunterAPI(AbsAPI):
 
 if __name__ == "__main__":
     from files_module import JsonFile
+    from config import HH_AREAS, HH_VAC
 
     # Загрузка списка населенных пунктов
     json_file_areas = JsonFile(HH_AREAS)        # Экземпляр класса для работы с файлами
