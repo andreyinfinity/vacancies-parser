@@ -1,22 +1,18 @@
 """
-Конструктор запросов взаимодействует с интерфейсом пользователя
-формирует данные для поискового запроса по площадкам вакансий.
-На вход поступают следующие данные:
-Город или населенный пункт,
-Ожидаемая сумма зарплаты,
-Ключевая фраза для поиска,
-Платформа для поиска (хедхантер или суперджоб),
-Метод сортировки (по з/п, по дате)
+Контроллер взаимодействует с интерфейсом пользователя и модулями API, вакансий.
+Формирует данные для поискового запроса по площадкам вакансий.
 """
 from dataclasses import dataclass
 from api_hh import HeadHunter
 from api_sj import SuperJob
 from vacancies import Vacancies
-# from interface_console import get_search_parameters, get_sort_parameters, output_console
+from config import VAC_FILE
+from files_module import JsonFile
 
 
 @dataclass
 class SearchParameters:
+    """Параметры, которые необходимо получить от пользователя для поиска"""
     user_name: str
     area: str
     salary: str
@@ -27,25 +23,27 @@ class SearchParameters:
 
 @dataclass
 class SortParameters:
+    """Параметры, которые необходимо получить от пользователя для сортировки и вывода"""
     method_sort_vac: str
     quantity_vac: str
     view_vac: str
 
 
 class ScriptSearchVacancies:
-    """"""
+    """Скрипт для поиска вакансий по площадкам и работы с загруженными вакансиями"""
     def __init__(self, parameters: SearchParameters):
         self.parameters = parameters
         self.user_name = parameters.user_name
-        self.area = parameters.area
+        self.area = parameters.area.lower().strip()
         self.search_text = parameters.search_text
         self.salary = self.get_salary()
         self.period = self.get_period()
         self.total_vacancies = []
 
     def get_salary(self) -> int:
+        """Преобразование ожидаемой з/п в числовой вид, по умолчанию 0"""
         try:
-            salary = int(self.parameters.salary)
+            salary = abs(int(self.parameters.salary))
         except TypeError:
             salary = 0
         except ValueError:
@@ -53,8 +51,9 @@ class ScriptSearchVacancies:
         return salary
 
     def get_period(self) -> int:
+        """Преобразование периода поиска вакансий в число"""
         try:
-            period = int(self.parameters.period)
+            period = abs(int(self.parameters.period))
             if period in (1, 3, 7):
                 pass
             else:
@@ -66,7 +65,10 @@ class ScriptSearchVacancies:
         return period
 
     def search(self) -> int:
-        """Выбор площадки для поиска вакансий и формирование параметров для запроса"""
+        """
+        Выбор площадки для поиска вакансий (1 - hh, 2 - sj, другое - hh + sj), формирование запроса.
+        Сохраняет все найденные вакансии в список. Возвращает количество найденных вакансий.
+        """
         if self.parameters.site == '1':
             hh = HeadHunter(area=self.area,
                             salary=self.salary,
@@ -99,17 +101,39 @@ class ScriptSearchVacancies:
         return len(self.total_vacancies)
 
     def sort(self, parameters: SortParameters):
-        # Сортировка вакансий в зависимости от выбранного типа сортировки. По умолчанию сначала новые.
+        """Сортировка вакансий в зависимости от выбранного типа сортировки. По умолчанию сначала новые."""
         if parameters.method_sort_vac == '3':
             Vacancies.sort_vacancies_by_salary(self.total_vacancies)
         elif parameters.method_sort_vac == '2':
             Vacancies.sort_vacancies_by_date(self.total_vacancies, reverse=False)
         else:
             Vacancies.sort_vacancies_by_date(self.total_vacancies)
+
+        try:
+            num = abs(int(parameters.quantity_vac))
+        except TypeError:
+            num = 10
+        except ValueError:
+            num = 10
+
         if parameters.view_vac == '2':
-            pass
+            self.save_json(self.total_vacancies)
         else:
-            if len(self.total_vacancies) <= int(parameters.quantity_vac):
-                return self.total_vacancies
-            else:
-                return self.total_vacancies[:int(parameters.quantity_vac)]
+            self.view(self.total_vacancies[:num])
+
+    def view(self, _list: list):
+        """Выводит список вакансий на экран"""
+        n = 0
+        for item in _list:
+            n += 1
+            print(f'\nВакансия № {n}')
+            print(str(item))
+            print('-' * 50)
+
+    def save_json(self, _list: list):
+        """Сохраняет список вакансий в файл json"""
+        all_vac = []
+        for item in _list:
+            all_vac.append(item.get_vacancy_dict())
+        json_file = JsonFile(VAC_FILE)
+        json_file.save_to_file(all_vac)

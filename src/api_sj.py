@@ -2,7 +2,6 @@
 Модуль работы с API SuperJob
 """
 import requests
-import json
 import os.path
 import time
 from datetime import datetime
@@ -86,7 +85,7 @@ class SuperJob(AbsAPI):
                 v["salary"] = 0
             except TypeError:
                 v["salary"] = 0
-            v["date_published"] = datetime.fromtimestamp(item.get("date_published")).strftime("%Y-%m-%m,%H:%M:%S")
+            v["date_published"] = datetime.fromtimestamp(item.get("date_published")).strftime("%Y-%m-%d,%H:%M:%S")
             try:
                 v["employer"] = item.get("client").get("title")
             except AttributeError:

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import json
 
 
 class AbsAPI(ABC):
@@ -39,7 +38,7 @@ class AbsAPI(ABC):
         pass
 
     @abstractmethod
-    def create_vacancies(self, vac_list: list[dict]) -> None:
+    def create_vacancies(self, vac_list: list[dict]) -> list:
         pass
 
 

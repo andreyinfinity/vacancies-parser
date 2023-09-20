@@ -3,7 +3,6 @@
 """
 import time
 import requests
-import json
 import os.path
 from vacancies import Vacancies
 from datetime import datetime
@@ -81,7 +80,7 @@ class HeadHunter(AbsAPI):
                 v["salary"] = 0
             except TypeError:
                 v["salary"] = 0
-            v["date_published"] = datetime.fromisoformat(item.get("published_at")).strftime("%Y-%m-%m,%H:%M:%S")
+            v["date_published"] = datetime.fromisoformat(item.get("published_at")).strftime("%Y-%m-%d,%H:%M:%S")
             try:
                 v["employer"] = item.get("employer").get("name")
             except AttributeError:

@@ -1,5 +1,5 @@
-from interface_console import start_script
+from interface_console import start
 
 
 if __name__ == "__main__":
-    start_script()
+    start()
