@@ -1,11 +1,10 @@
 """
 Интерфейс взаимодействия с пользователем.
 """
-from pprint import pprint
 from controller import ScriptSearchVacancies, SearchParameters, SortParameters
 
 
-def get_search_parameters() -> SearchParameters:
+def _get_search_parameters() -> SearchParameters:
     print('Добро пожаловать в мир поиска работы вашей мечты.')
 
     user_name = input('Введите ваше имя: ')
@@ -30,7 +29,7 @@ def get_search_parameters() -> SearchParameters:
                             search_text=search_text)
 
 
-def get_sort_parameters(user_name: str, total_vacs: int) -> SortParameters:
+def _get_sort_parameters(user_name: str, total_vacs: int) -> SortParameters:
     print(f"{user_name}, благодарим за ожидание.\n"
           f"По вашему запросу найдено вакансий - {total_vacs}")
 
@@ -50,21 +49,14 @@ def get_sort_parameters(user_name: str, total_vacs: int) -> SortParameters:
                           view_vac=view_vac)
 
 
-# def output_console(data: list[dict]):
-#     for item in data:
-#         pprint(item, indent=2)
-
-
-if __name__ == "__main__":
+def start_script():
     # Получение от пользователя параметров для поискового запроса
-    parameters = get_search_parameters()
+    parameters = _get_search_parameters()
     # Инициализация класса для поиска и сортировки
     vacancies = ScriptSearchVacancies(parameters)
     # Поиск
     total_vacancies = vacancies.search()
     # Получение параметров для сортировки
-    sort_parameters = get_sort_parameters(parameters.user_name, total_vacancies)
-    # Сортировка
-    sorted_vacancies = vacancies.sort(sort_parameters)
+    sort_parameters = _get_sort_parameters(parameters.user_name, total_vacancies)
     # Вывод результата сортировки
-    pprint(sorted_vacancies)
+    vacancies.sort(sort_parameters)
