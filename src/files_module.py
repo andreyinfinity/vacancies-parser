@@ -3,6 +3,7 @@
 """
 from abc_classes import AbsFile
 import json
+from openpyxl import Workbook
 import os
 
 
@@ -17,13 +18,13 @@ class JsonFile(AbsFile):
         :return:
         """
         os.makedirs(os.path.split(self.filename)[0], exist_ok=True)
-        with open(self.filename, "w", encoding="utf-8") as file:
-            json.dump(json_data, file, indent=2, ensure_ascii=False)
+        with open(self.filename, "w", encoding="utf-8") as json_file:
+            json.dump(json_data, json_file, indent=2, ensure_ascii=False)
 
     def load_from_file(self) -> json:
-        with open(self.filename, "r", encoding="utf-8") as file:
-            data = json.load(file)
-        return data
+        with open(self.filename, "r", encoding="utf-8") as json_file:
+            json_data = json.load(json_file)
+        return json_data
 
     def find_in_list(self, _list: list, val: str, key_name: str, result=None) -> list:
         """
@@ -50,7 +51,44 @@ class JsonFile(AbsFile):
             self.find_in_list(_list=_dict.get('areas'), val=val, key_name=key_name, result=result)
 
 
-# if __name__ == "__main__":
+class ExelFile(AbsFile):
+    """Класс для работы с файлами Exel. При инициализации передается путь к файлу."""
+    def __init__(self, filename: str):
+        self.filename = filename
+
+    def save_to_file(self, json_data: list[dict]) -> None:
+        """Преобразует json формат в таблицу Exel и сохраняет в файл."""
+        os.makedirs(os.path.split(self.filename)[0], exist_ok=True)
+        workbook = Workbook()
+        # создание листа книги
+        sheet = workbook.create_sheet('Вакансии', 0)
+        # создание заголовков
+        col_num = 1
+        for key in json_data[0].keys():
+            sheet.cell(row=1, column=col_num, value=key)
+            col_num += 1
+        # Запись значений в ячейки
+        row_num = 2
+        for item in json_data:
+            col_num = 1
+            for value in item.values():
+                sheet.cell(row=row_num, column=col_num, value=value)
+                col_num += 1
+            row_num += 1
+        # Сохранение файла
+        workbook.save(self.filename)
+
+    def load_from_file(self):
+        pass
+
+
+if __name__ == "__main__":
+    from config import XLSX_FILE, VAC_FILE
+    js = JsonFile(VAC_FILE)
+    data = js.load_from_file()
+
+    file = ExelFile(XLSX_FILE)
+    file.save_to_file(data)
     # hh_areas = HH_AREAS
     # hh_file = JsonFile(hh_areas)
     # area = hh_file.load_from_file()

@@ -12,3 +12,4 @@ HH_AREAS: str = os.path.join(os.path.dirname(__file__), "data", "hh-areas.json")
 # HH_VAC: str = os.path.join(os.path.dirname(__file__), "data", "hh-vac", "hh-vac.json")
 
 VAC_FILE: str = os.path.join(os.path.dirname(__file__), "result", "vacancies.json")
+XLSX_FILE: str = os.path.join(os.path.dirname(__file__), "result", "vacancies.xlsx")

@@ -9,6 +9,7 @@ packages = [{include = "4coursework_parsing_hh"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 requests = "^2.31.0"
+openpyxl = "^3.1.2"
 
 
 [build-system]
