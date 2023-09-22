@@ -41,14 +41,27 @@ def _get_sort_parameters(user_name: str, total_vacs: int) -> SortParameters:
 
     view_vac = input('Введите:\n'
                      '1 - для вывода на экран\n'
-                     '2 - для записи в файл\n')
+                     '2 - для записи в файл json\n'
+                     '3 - для записи в файл Exel\n')
 
-    quantity_vac = input('Введите какое количество вакансий вы хотите посмотреть '
-                         '(по умолчанию 10)\n')
+    if view_vac == '1':
+        quantity_vac = input('Введите какое количество вакансий вы хотите посмотреть (по умолчанию 10)\n')
+    else:
+        quantity_vac = '10'
 
     return SortParameters(method_sort_vac=method_sort_vac,
                           quantity_vac=quantity_vac,
                           view_vac=view_vac)
+
+
+def view(_list: list):
+    """Выводит список вакансий на экран"""
+    n = 0
+    for item in _list:
+        n += 1
+        print(f'\nВакансия № {n}')
+        print(str(item))
+        print('-' * 50)
 
 
 def start():
@@ -61,4 +74,4 @@ def start():
     # Получение параметров для сортировки
     sort_parameters = _get_sort_parameters(parameters.user_name, total_vacancies)
     # Вывод результата сортировки
-    vacancies.sort(sort_parameters)
+    view(vacancies.sort(sort_parameters))

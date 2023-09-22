@@ -16,6 +16,7 @@ class HeadHunter(AbsAPI):
     vacancy_url_api = "https://api.hh.ru/vacancies"
 
     def create_params(self) -> dict:
+        """Создание параметров для поиска. Возвращает словарь с параметрами."""
         params = {
             'area': self.area_id,
             'period': self.period,
@@ -29,6 +30,7 @@ class HeadHunter(AbsAPI):
         return params
 
     def get_area_id(self, area: str) -> int:
+        """Метод получения id города по его названию. Если город не найден, то возвращается id страны Россия"""
         json_hh_areas = JsonFile(HH_AREAS)
         if not os.path.isfile(HH_AREAS):
             areas = self.get_areas()
@@ -42,13 +44,11 @@ class HeadHunter(AbsAPI):
             return area_id[0]
 
     def get_areas(self) -> list[dict]:
-        """
-        Метод получения общего списка населенных пунктов
-        :return:
-        """
+        """Метод получения общего списка населенных пунктов"""
         return requests.get(self.area_url_api).json()
 
     def get_vacancies(self) -> list[dict]:
+        """Получение списка вакансий по заданным параметрам."""
         page = 0
         pages = 1
         vacancies_list = []
@@ -60,7 +60,6 @@ class HeadHunter(AbsAPI):
                 data = response.json()
                 page += 1
                 pages = int(data.get('pages'))
-                # self.create_vacancies(data.get("items"))
                 vacancies_list.extend(data.get("items"))
             else:
                 break
@@ -68,6 +67,7 @@ class HeadHunter(AbsAPI):
         return vacancies_list
 
     def create_vacancies(self, vac_list: list[dict]) -> list[Vacancies]:
+        """Метод создания экземпляров класса Вакансии. Возвращает список экземпляров класса."""
         all_hh_vacancies = []
         for item in vac_list:
             v = dict()

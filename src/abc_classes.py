@@ -15,38 +15,37 @@ class AbsAPI(ABC):
 
     @abstractmethod
     def create_params(self) -> dict:
+        """Метод формирования параметров поиска"""
         pass
 
     @abstractmethod
     def get_area_id(self, area: str) -> int:
+        """Метод получения id города по его названию"""
         pass
 
     @abstractmethod
     def get_areas(self) -> list[dict]:
-        """
-        Метод получения общего списка населенных пунктов
-        :return:
-        """
+        """Метод получения общего списка населенных пунктов"""
         pass
 
     @abstractmethod
     def get_vacancies(self) -> list[dict]:
-        """
-        Метод получения списка вакансий
-        :return:
-        """
+        """Метод получения списка вакансий"""
         pass
 
     @abstractmethod
     def create_vacancies(self, vac_list: list[dict]) -> list:
+        """Метод создания экземпляров класса Вакансии"""
         pass
 
 
 class AbsFile(ABC):
     @abstractmethod
     def save_to_file(self, data):
+        """Метод сохранения данных в файл"""
         pass
 
     @abstractmethod
     def load_from_file(self):
+        """Метод загрузки данных из файла"""
         pass

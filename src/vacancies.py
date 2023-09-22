@@ -1,4 +1,6 @@
 class Vacancies:
+    """Класс вакансий содержит методы получения вакансий в строковом представлении для вывода в консоль
+    и в виде словаря для сохранения в файл. Имеются методы сортировки вакансий по дате и зарплате"""
     def __init__(self, vacancy: dict):
         self.title = vacancy.get("title")
         self.url = vacancy.get("url")
@@ -11,6 +13,7 @@ class Vacancies:
         self.experience = vacancy.get("experience")
 
     def __str__(self) -> str:
+        """Возвращает информацию о вакансии в строковом виде"""
         return (f"Название вакансии:".ljust(26) + f"{self.title}\n" +
                 f"url адрес:".ljust(26) + f"{self.url}\n" +
                 f"минимальная зарплата, руб".ljust(26) + f"{self.salary}\n" +
@@ -22,6 +25,7 @@ class Vacancies:
                 f"дата публикации:".ljust(26) + f"{self.date_published}\n")
 
     def get_vacancy_dict(self) -> dict:
+        """Возвращает информацию о вакансии в виде словаря"""
         return {
             "Название вакансии": self.title,
             "url адрес": self.url,

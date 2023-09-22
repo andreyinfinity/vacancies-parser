@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from api_hh import HeadHunter
 from api_sj import SuperJob
 from vacancies import Vacancies
-from config import VAC_FILE
-from files_module import JsonFile
+from config import VAC_FILE, XLSX_FILE
+from files_module import JsonFile, ExelFile
 
 
 @dataclass
@@ -118,17 +118,12 @@ class ScriptSearchVacancies:
 
         if parameters.view_vac == '2':
             self.save_json(self.total_vacancies)
+            return self.total_vacancies[:num]
+        elif parameters.view_vac == '3':
+            self.save_exel(self.total_vacancies)
+            return self.total_vacancies[:num]
         else:
-            self.view(self.total_vacancies[:num])
-
-    def view(self, _list: list):
-        """Выводит список вакансий на экран"""
-        n = 0
-        for item in _list:
-            n += 1
-            print(f'\nВакансия № {n}')
-            print(str(item))
-            print('-' * 50)
+            return self.total_vacancies[:num]
 
     def save_json(self, _list: list):
         """Сохраняет список вакансий в файл json"""
@@ -137,3 +132,11 @@ class ScriptSearchVacancies:
             all_vac.append(item.get_vacancy_dict())
         json_file = JsonFile(VAC_FILE)
         json_file.save_to_file(all_vac)
+
+    def save_exel(self, _list: list):
+        """Сохраняет список вакансий в файл Exel"""
+        all_vac = []
+        for item in _list:
+            all_vac.append(item.get_vacancy_dict())
+        exel_file = ExelFile(XLSX_FILE)
+        exel_file.save_to_file(all_vac)

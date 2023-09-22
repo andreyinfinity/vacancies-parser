@@ -17,6 +17,7 @@ class SuperJob(AbsAPI):
     headers = {'X-Api-App-Id': SJ_API_KEY}
 
     def create_params(self) -> dict:
+        """Создание параметров для поиска. Возвращает словарь с параметрами."""
         params = {
             'period': self.period,
             'page': 0,
@@ -33,6 +34,7 @@ class SuperJob(AbsAPI):
         return params
 
     def get_area_id(self, area: str) -> int:
+        """Метод получения id города по его названию. Если город не найден, то возвращается id страны Россия"""
         json_sj_areas = JsonFile(SJ_AREAS)
         if not os.path.isfile(SJ_AREAS):
             areas = self.get_areas()
@@ -46,15 +48,13 @@ class SuperJob(AbsAPI):
             return area_id[0]
 
     def get_areas(self) -> list[dict]:
-        """
-        Метод получения общего списка населенных пунктов
-        :return:
-        """
+        """Метод получения общего списка населенных пунктов"""
         params = {'id_country': 1,
                   'all': 1}
         return requests.get(self.area_url_api, headers=self.headers, params=params).json()
 
     def get_vacancies(self) -> list[dict]:
+        """Получение списка вакансий по заданным параметрам."""
         page = 0
         more = True
         vacancies_list = []
@@ -64,7 +64,6 @@ class SuperJob(AbsAPI):
             if response.ok:
                 data = response.json()
                 vacancies_list.extend(data.get("objects"))
-                # self.create_vacancies(data.get("objects"))
                 if data.get("more"):
                     page += 1
                     time.sleep(1)
@@ -73,6 +72,7 @@ class SuperJob(AbsAPI):
         return vacancies_list
 
     def create_vacancies(self, vac_list: list[dict]) -> list[Vacancies]:
+        """Метод создания экземпляров класса Вакансии. Возвращает список экземпляров класса."""
         all_sj_vacancies = []
         for item in vac_list:
             v = dict()
